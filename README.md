@@ -17,14 +17,14 @@ npm start
 
 ## เผยแพร่เว็บบน Render
 
-ไฟล์ `render.yaml` ตั้งค่า Web Service พร้อม Persistent Disk สำหรับฐานข้อมูล SQLite ไว้แล้ว โดย Render ต้องใช้แพ็กเกจที่รองรับ Persistent Disk ซึ่งเป็นแพ็กเกจแบบชำระเงิน
+ไฟล์ `render.yaml` ตั้งค่า Web Service บน Free instance โดยไม่ใช้ Persistent Disk
 
 1. นำโครงการขึ้น GitHub โดยไม่อัปโหลด `node_modules` หรือไฟล์ใน `data/`
-2. ใน Render เลือก **New > Blueprint** แล้วเชื่อมต่อ GitHub repository นี้
-3. ตรวจสอบบริการ `my-cow-farm` และ Persistent Disk ขนาด 1 GB จากนั้นยืนยันการสร้างและรอ Deploy
+2. ใน Render เลือก **New > Blueprint** แล้วระบุ GitHub repository นี้
+3. ตรวจสอบบริการ `my-cow-farm` แล้วสร้างบริการและรอ Deploy
 4. เปิด URL ที่ Render แสดงหลัง Deploy เสร็จ
 
-ฐานข้อมูลบัญชีและเซสชันจะอยู่ที่ `/var/data/farm.sqlite` และคงอยู่เมื่อมีการ Deploy หรือรีสตาร์ตตามปกติ ห้ามลบ Persistent Disk หรือสร้าง Disk ใหม่ทับของเดิมหากต้องการเก็บข้อมูลไว้
+Free instance ไม่มี Persistent Disk ฐานข้อมูล SQLite ของบัญชีและเซสชันจึงอยู่บนพื้นที่ชั่วคราว และอาจหายเมื่อเซิร์ฟเวอร์รีสตาร์ตหรือ Deploy ใหม่ ผู้ใช้อาจต้องสมัครสมาชิกอีกครั้ง หากต้องการเก็บบัญชีและเซสชันให้คงอยู่ ต้องเปลี่ยนเป็นแพ็กเกจที่รองรับ Persistent Disk และเพิ่ม Disk แบบชำระเงิน
 
 ข้อมูลฟาร์ม เช่น วัว อาหาร และรายการต่าง ๆ ยังเก็บในเบราว์เซอร์ของผู้ใช้แต่ละคนตามระบบปัจจุบัน การนำเว็บขึ้น Render ไม่ได้ทำให้ข้อมูลเหล่านี้ซิงก์ระหว่างผู้ใช้หรืออุปกรณ์
 
