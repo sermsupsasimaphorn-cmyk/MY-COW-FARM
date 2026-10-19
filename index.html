@@ -1,0 +1,2985 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY COW FARM | ระบบจัดการฟาร์มวัว</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --green: #2e5a27;
+    --dark: #244331;
+    --light: #e8f2e8;
+    --bg: #f7f6f1;
+    --white: #ffffff;
+    --border: #e4e7df;
+    --text: #38463b;
+    --muted: #778177;
+    --red: #c84b4b;
+    --gold: #ad8053;
+    --brown: #7a5230;
+    --brown-light: #f3ece3;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    position: relative;
+    isolation: isolate;
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+}
+
+body::before {
+    position: fixed;
+    z-index: -1;
+    inset: 0;
+    background:
+        linear-gradient(rgba(247, 246, 241, .48), rgba(247, 246, 241, .48)),
+        url("/farm-background") center / cover no-repeat;
+    content: "";
+    pointer-events: none;
+}
+
+button, input, select, textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.container {
+    width: min(1180px, 92%);
+    margin: auto;
+}
+
+.btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: var(--green);
+    color: white;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.btn:hover {
+    filter: brightness(.94);
+    transform: translateY(-1px);
+}
+
+.btn-light {
+    background: var(--light);
+    color: var(--dark);
+}
+
+.btn-brown {
+    background: var(--brown);
+    color: white;
+}
+
+.btn-danger {
+    background: #fff0f0;
+    color: var(--red);
+}
+
+.btn-small {
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 13px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    outline: none;
+    background: white;
+    color: var(--text);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px #39765318;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.field {
+    min-width: 0;
+}
+
+.field-full {
+    grid-column: 1 / -1;
+}
+
+.muted {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.section-title {
+    margin-bottom: 18px;
+}
+
+.section-title h2 {
+    color: var(--dark);
+    font-size: 24px;
+}
+
+.section-title p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* หน้าปก */
+.hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: url("/cover-image") center / cover no-repeat;
+    color: white;
+}
+
+.hero-content {
+    width: min(1180px, 90%);
+    margin: auto;
+    padding: 60px 0;
+}
+
+.hero-tag {
+    display: inline-block;
+    padding: 7px 14px;
+    background: #ffffff22;
+    border: 1px solid #ffffff55;
+    border-radius: 30px;
+    margin-bottom: 20px;
+    text-shadow: 0 1px 3px rgba(0,0,0,.55);
+}
+
+.hero h1 {
+    max-width: 720px;
+    font-size: clamp(38px, 6vw, 70px);
+    line-height: 1.2;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 8px rgba(0,0,0,.62);
+}
+
+.hero p {
+    max-width: 580px;
+    color: #e6f0e8;
+    margin-bottom: 28px;
+    font-size: 17px;
+    text-shadow: 0 1px 5px rgba(0,0,0,.8);
+}
+
+.hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.hero .btn {
+    padding: 13px 24px;
+}
+
+.hero .btn-light {
+    background: white;
+}
+
+/* เมนู */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 3px 15px #16383208;
+}
+
+.nav-inner {
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 165px;
+}
+
+.brand-cow {
+    font-size: 27px;
+    line-height: 1;
+}
+
+.brand-copy {
+    display: grid;
+    line-height: 1.2;
+}
+
+.brand {
+    color: var(--dark);
+    font-weight: 700;
+    font-size: 17px;
+    white-space: nowrap;
+    max-width: min(24vw, 260px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.brand-caption {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text);
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.nav-links a:hover {
+    background: var(--light);
+    color: var(--green);
+}
+
+.nav-links a.active {
+    background: var(--light);
+    color: var(--green);
+    font-weight: 700;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 190px;
+    padding: 5px 9px 5px 5px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: #fffefa;
+}
+
+.profile-avatar {
+    display: grid;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--brown-light);
+    color: var(--brown);
+    font-weight: 700;
+}
+
+.profile-copy {
+    display: grid;
+    min-width: 0;
+    line-height: 1.25;
+}
+
+.profile-copy strong,
+.profile-copy span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-copy strong {
+    color: var(--dark);
+    font-size: 11px;
+}
+
+.profile-copy span {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+/* เนื้อหา */
+main {
+    padding: 28px 0 60px;
+}
+
+.welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.welcome h1 {
+    color: var(--dark);
+    font-size: 27px;
+}
+
+.dashboard-banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 154px;
+    padding: 24px 26px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: #f3f4e9;
+    isolation: isolate;
+}
+
+.dashboard-banner::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(249,250,244,.50) 0%, rgba(249,250,244,.35) 43%, rgba(249,250,244,.04) 76%),
+        url("/farm-landscape") center top / cover no-repeat;
+    content: "";
+}
+
+.dashboard-banner-copy {
+    max-width: 62%;
+}
+
+.dashboard-banner-edit {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.dashboard-banner h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--dark);
+    font-size: clamp(25px, 3vw, 35px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.dashboard-leaf {
+    color: #788f55;
+    font-size: 22px;
+}
+
+.dashboard-tagline {
+    margin-top: 4px;
+    color: var(--muted);
+}
+
+.dashboard-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.dashboard-weather {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding-left: 13px;
+    border-left: 1px solid #d5dbce;
+}
+
+.dashboard-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 14px;
+}
+
+.dashboard-card {
+    min-width: 0;
+    padding: 17px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: var(--white);
+    box-shadow: 0 4px 16px rgba(36, 70, 55, .045);
+}
+
+.dashboard-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 13px;
+}
+
+.dashboard-card-heading h2 {
+    color: var(--dark);
+    font-size: 19px;
+}
+
+.dashboard-card-heading a {
+    color: var(--green);
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.dashboard-card-heading a:hover {
+    text-decoration: underline;
+}
+
+.dashboard-period {
+    width: auto;
+    min-width: 112px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 12px;
+}
+
+.dashboard-chart-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard-activity {
+    width: 100%;
+    min-width: 0;
+    border-collapse: collapse;
+}
+
+.dashboard-activity th,
+.dashboard-activity td {
+    padding: 9px 7px;
+    border-bottom: 1px solid #edf0e9;
+    font-size: 13px;
+    text-align: left;
+}
+
+.dashboard-activity th {
+    background: #f1f5ed;
+    color: var(--dark);
+}
+
+.dashboard-activity tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.activity-type {
+    color: var(--dark);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.activity-amount {
+    color: var(--dark);
+    font-weight: 700;
+    text-align: right !important;
+    white-space: nowrap;
+}
+
+.activity-empty,
+.dashboard-empty {
+    padding: 20px 10px !important;
+    color: var(--muted);
+    text-align: center !important;
+}
+
+.dashboard-chart {
+    display: flex;
+    gap: 10px;
+    min-height: 184px;
+    padding: 10px 4px 0;
+}
+
+.chart-axis {
+    display: flex;
+    flex: 0 0 42px;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 0 25px;
+    color: var(--muted);
+    font-size: 10px;
+    text-align: right;
+}
+
+.chart-columns {
+    display: grid;
+    flex: 1;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    background: repeating-linear-gradient(to bottom, transparent 0, transparent 43px, #edf0e9 44px, transparent 45px);
+}
+
+.chart-columns.compact .chart-value {
+    display: none;
+}
+
+.chart-column {
+    display: grid;
+    min-width: 0;
+    grid-template-rows: 1fr 22px;
+}
+
+.chart-bar-area {
+    position: relative;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    min-height: 0;
+}
+
+.chart-bar {
+    position: relative;
+    width: min(62%, 58px);
+    min-height: 5px;
+    border-radius: 5px 5px 0 0;
+    background: linear-gradient(180deg, #84a77a, var(--green));
+}
+
+.chart-bar.negative {
+    background: linear-gradient(180deg, #b48a63, var(--brown));
+}
+
+.chart-value {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    color: var(--dark);
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+.chart-week {
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 10px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dashboard-lower-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 14px;
+}
+
+.stock-list {
+    display: grid;
+    gap: 12px;
+}
+
+.stock-summary-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .85fr) minmax(0, .75fr) minmax(0, .85fr);
+    align-items: center;
+    gap: 8px;
+    color: var(--dark);
+    font-size: 13px;
+}
+
+.stock-summary-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .85fr) minmax(0, .75fr) minmax(0, .85fr);
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    background: #f1f5ed;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.stock-summary-header span:not(:first-child) {
+    text-align: right;
+}
+
+.stock-summary-name {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stock-summary-remaining {
+    color: var(--green);
+    font-weight: 700;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.stock-summary-used,
+.stock-summary-cost {
+    overflow: hidden;
+    color: var(--muted);
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stock-progress {
+    grid-column: 1 / -1;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #e9ece6;
+}
+
+.stock-progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--green), #86a67a);
+}
+
+.alert-list {
+    display: grid;
+    gap: 0;
+}
+
+.farm-alert {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid #edf0e9;
+}
+
+.farm-alert:last-child {
+    border-bottom: 0;
+}
+
+.farm-alert-icon {
+    color: var(--brown);
+}
+
+.farm-alert-title {
+    color: var(--dark);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.farm-alert-detail,
+.farm-alert-time {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.farm-alert-time {
+    white-space: nowrap;
+}
+
+.panel {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 15px #16383206;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    padding: 20px;
+    border-radius: 15px;
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--green);
+    box-shadow: 0 4px 16px rgba(36, 70, 55, .045);
+}
+
+.stat-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--light);
+    font-size: 23px;
+    margin-bottom: 8px;
+}
+
+.stat-card:nth-child(2) .stat-icon,
+.stat-card:nth-child(4) .stat-icon {
+    background: var(--brown-light);
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.stat-value {
+    color: var(--dark);
+    font-size: 25px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.stat-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 24px;
+}
+
+.section-nav a {
+    text-decoration: none;
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--dark);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+.section-nav a:hover {
+    background: var(--light);
+}
+
+.section-nav a:first-child {
+    background: var(--dark);
+    color: white;
+}
+
+.section-nav a:nth-child(2) {
+    background: var(--brown);
+    border-color: var(--brown);
+    color: white;
+}
+
+.section-nav a:first-child:hover,
+.section-nav a:nth-child(2):hover {
+    filter: brightness(.94);
+}
+
+/* แบบฟอร์ม */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.sale-cow-picker {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, .7fr);
+    gap: 12px;
+    align-items: start;
+}
+
+.sale-cow-suggestions {
+    display: grid;
+    gap: 5px;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.sale-cow-suggestion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #f8fbf7;
+    color: var(--text);
+    text-align: left;
+}
+
+.sale-cow-suggestion:hover,
+.sale-cow-suggestion:focus-visible {
+    background: var(--light);
+    outline: 2px solid var(--green);
+    outline-offset: 1px;
+}
+
+.sale-cow-suggestion strong {
+    white-space: nowrap;
+}
+
+.sale-cow-suggestion span {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: right;
+}
+
+.sale-cow-suggestion-empty {
+    padding: 8px 10px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.cow-entry-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 10px;
+    color: var(--dark);
+}
+
+.cow-entry-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    background: #f5f8f3;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.cow-entry-row .field label {
+    font-size: 13px;
+}
+
+.cow-entry-row .btn {
+    margin-bottom: 2px;
+}
+
+.summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.summary-box {
+    background: var(--light);
+    padding: 15px;
+    border-radius: 11px;
+}
+
+.summary-box span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.summary-box strong {
+    color: var(--dark);
+    font-size: 20px;
+}
+
+/* ตาราง */
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.table-total td {
+    background: #f1f7f0;
+    color: var(--dark);
+    font-weight: 700;
+    border-top: 2px solid var(--border);
+}
+
+.table-group-heading td {
+    background: #eaf4e9;
+    color: var(--dark);
+    font-weight: 700;
+    border-top: 1px solid var(--border);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    min-width: 680px;
+}
+
+th, td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e9eee8;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+th {
+    background: #eaf4e9;
+    color: var(--dark);
+    white-space: nowrap;
+}
+
+tbody tr:hover {
+    background: #f8fbf7;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.status {
+    display: inline-block;
+    border-radius: 30px;
+    padding: 4px 9px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.status-in {
+    background: #e3f5e6;
+    color: #277344;
+}
+
+.status-out {
+    background: #fff0df;
+    color: #9a5a16;
+}
+
+.empty {
+    text-align: center;
+    padding: 25px;
+    color: var(--muted);
+}
+
+.notice {
+    background: #fff8e8;
+    color: #75551b;
+    border: 1px solid #f1dfb7;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.profit-positive {
+    color: #247744;
+    font-weight: 700;
+}
+
+.profit-negative {
+    color: var(--red);
+    font-weight: 700;
+}
+
+footer {
+    position: relative;
+    display: flex;
+    min-height: 112px;
+    align-items: end;
+    justify-content: center;
+    overflow: hidden;
+    isolation: isolate;
+    text-align: center;
+    color: var(--dark);
+    padding: 62px 12px 14px;
+    font-size: 13px;
+    background: linear-gradient(180deg, transparent 0%, #edf2e7 100%);
+}
+
+footer::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: url("/farm-landscape") center bottom / cover no-repeat;
+    content: "";
+    opacity: .22;
+    mask-image: linear-gradient(180deg, transparent 0%, #000 50%);
+}
+
+/* หน้าต่างเข้าสู่ระบบ */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: #0a2018b8;
+    overflow-y: auto;
+}
+
+.modal-card {
+    background: white;
+    width: min(440px, 100%);
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 20px 70px #0003;
+    margin: auto;
+}
+
+.modal-card h2 {
+    color: var(--dark);
+    margin-bottom: 5px;
+}
+
+.modal-card .field {
+    margin-top: 14px;
+}
+
+.modal-card .btn {
+    width: 100%;
+    margin-top: 18px;
+}
+
+.modal-switch {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.link-button {
+    background: none;
+    color: var(--green);
+    text-decoration: underline;
+}
+
+#toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 200;
+    background: var(--dark);
+    color: white;
+    padding: 13px 18px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px #0002;
+    max-width: min(400px, calc(100% - 40px));
+}
+
+@media (max-width: 900px) {
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .nav-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 12px 0;
+    }
+
+    .nav-links {
+        width: 100%;
+    }
+
+    .nav-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .dashboard-layout,
+    .dashboard-lower-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .stat-card {
+        padding: 13px;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    .form-grid,
+    .summary-row {
+        grid-template-columns: 1fr;
+    }
+
+    .cow-entry-row {
+        grid-template-columns: 1fr;
+    }
+
+    .sale-cow-picker {
+        grid-template-columns: minmax(0, 1fr) minmax(135px, .8fr);
+        gap: 7px;
+    }
+
+    .sale-cow-suggestion {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+        padding: 7px;
+    }
+
+    .sale-cow-suggestion span {
+        text-align: left;
+    }
+
+    .panel {
+        padding: 15px;
+    }
+
+    .dashboard-banner {
+        min-height: 142px;
+        padding: 54px 18px 18px;
+    }
+
+    .dashboard-banner::before {
+        background:
+            linear-gradient(90deg, rgba(249,250,244,.74) 0%, rgba(249,250,244,.60) 56%, rgba(249,250,244,.10) 100%),
+            url("/farm-landscape") center top / cover no-repeat;
+    }
+
+    .dashboard-banner-copy {
+        max-width: 100%;
+    }
+
+    .dashboard-banner-edit {
+        top: 10px;
+        right: 12px;
+        bottom: auto;
+    }
+
+    .dashboard-meta {
+        font-size: 12px;
+    }
+
+    .dashboard-card {
+        padding: 13px;
+    }
+
+    .dashboard-card-heading h2 {
+        font-size: 17px;
+    }
+
+    .dashboard-chart-heading {
+        flex-wrap: wrap;
+    }
+
+    .dashboard-chart-heading .dashboard-chart-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .dashboard-activity th,
+    .dashboard-activity td {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    .dashboard-activity th:nth-child(3),
+    .dashboard-activity td:nth-child(3) {
+        display: none;
+    }
+
+    .stock-summary-row,
+    .stock-summary-header {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 6px;
+    }
+
+    .stock-summary-row > :nth-child(3),
+    .stock-summary-header > :nth-child(3) {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 39px;
+    }
+
+    .section-title h2 {
+        font-size: 21px;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- หน้าปก -->
+<section class="hero" id="cover">
+    <div class="hero-content">
+        <div class="hero-tag">🌿 ระบบจัดการฟาร์มวัว</div>
+        <h1>MY COW FARM</h1>
+        <p>จัดการวัว อาหารฟาร์ม และติดตามผลกำไรได้ในที่เดียว ช่วยให้การดูแลฟาร์มของคุณเป็นเรื่องง่ายขึ้น</p>
+        <div class="hero-buttons">
+            <button class="btn btn-light" onclick="openAuth('login')">เข้าสู่ระบบ</button>
+            <button class="btn" onclick="openAuth('register')">สร้างบัญชีฟาร์ม</button>
+        </div>
+    </div>
+</section>
+
+<!-- เมนูและระบบหลัก -->
+<div id="app" class="hidden">
+    <header class="navbar">
+        <div class="container nav-inner">
+            <div class="brand-lockup">
+                <span class="brand-cow" aria-hidden="true">🐄</span>
+                <div class="brand-copy">
+                    <div class="brand" id="brandName">MY COW FARM</div>
+                    <span class="brand-caption">ระบบจัดการฟาร์มวัว</span>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#dashboard">หน้าหลัก</a>
+                <a href="#cowSection">จัดการวัว</a>
+                <a href="#saleSection">ส่งวัว</a>
+                <a href="#feedSection">อาหารวัว</a>
+                <a href="#reportSection">รายงาน</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="profile-chip" aria-label="บัญชีผู้ใช้">
+                    <span class="profile-avatar" id="profileAvatar" aria-hidden="true">ฟ</span>
+                    <span class="profile-copy">
+                        <strong id="profileUsername">ผู้ดูแลฟาร์ม</strong>
+                        <span id="profileFarmName">ฟาร์มของฉัน</span>
+                    </span>
+                </div>
+                <button class="btn btn-light btn-small" id="exportButton" type="button" onclick="exportCurrentPage()">⬇️ ส่งออก Excel</button>
+                <button class="btn btn-brown btn-small" onclick="logout()">ออกจากระบบ</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="dashboardPage">
+        <section class="dashboard-banner" id="dashboard">
+            <div class="dashboard-banner-copy">
+                <h1><span id="welcomeTitle">ฟาร์มของฉัน</span><span class="dashboard-leaf" aria-hidden="true">🌿</span></h1>
+                <p class="dashboard-tagline">เพราะการเลี้ยงวัว...คืออนาคตของเรา</p>
+                <div class="dashboard-meta">
+                    <span class="dashboard-date">📅 <span id="dashboardDate"></span></span>
+                    <span class="dashboard-weather" title="สภาพอากาศตัวอย่าง ไม่ใช่ข้อมูลพยากรณ์จริง">☀️ อากาศแจ่มใส · 28°C <small>(ตัวอย่าง)</small></span>
+                </div>
+            </div>
+            <button class="btn btn-light btn-small dashboard-banner-edit" onclick="editFarmName()">✏️ แก้ไขชื่อฟาร์ม</button>
+        </section>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-icon">🐄</div>
+                <div class="stat-label">วัวคงเหลือ</div>
+                <div class="stat-value" id="statCows">0 ตัว</div>
+                <div class="stat-note">จำนวนวัวที่ยังไม่ได้ส่งขาย</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">กำไรจากวัวที่ขายแล้ว</div>
+                <div class="stat-value" id="statProfit">฿0</div>
+                <div class="stat-note">ราคาขายหักต้นทุนซื้อวัว</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🌾</div>
+                <div class="stat-label">ชนิดอาหารที่มีสต็อก</div>
+                <div class="stat-value" id="statFeedTypes">0 ชนิด</div>
+                <div class="stat-note">นับเฉพาะชนิดที่ยังเหลือ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-label">ค่าอาหารที่ซื้อทั้งหมด</div>
+                <div class="stat-value" id="statFeedCost">฿0</div>
+                <div class="stat-note">ยอดซื้ออาหารสะสม</div>
+            </div>
+        </div>
+
+        <div class="section-nav">
+            <a href="#cowSection">＋　บันทึกซื้อวัว</a>
+            <a href="#saleSection">🚚　บันทึกส่งวัว</a>
+            <a href="#feedSection">🌿　จัดการอาหาร</a>
+            <a href="#reportSection">▥　ดูกำไรรายสัปดาห์</a>
+        </div>
+
+        <div class="dashboard-layout">
+            <section class="dashboard-card">
+                <div class="dashboard-card-heading">
+                    <h2>▤　รายการเคลื่อนไหวล่าสุด</h2>
+                    <a href="#cowSection">ดูทั้งหมด　›</a>
+                </div>
+                <div class="table-wrap">
+                    <table class="dashboard-activity">
+                        <thead>
+                            <tr><th>วันที่</th><th>รายการ</th><th>รหัส/รายละเอียด</th><th>จำนวนเงิน</th><th>สถานะ</th></tr>
+                        </thead>
+                        <tbody id="dashboardActivities"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="dashboard-card">
+                <div class="dashboard-card-heading dashboard-chart-heading">
+                    <h2>▥　กำไรรายสัปดาห์</h2>
+                    <div class="dashboard-chart-actions">
+                        <select id="dashboardWeekRange" class="dashboard-period" aria-label="เลือกจำนวนสัปดาห์ในกราฟ" onchange="renderDashboard()">
+                            <option value="4">4 สัปดาห์</option>
+                            <option value="8">8 สัปดาห์</option>
+                            <option value="12">12 สัปดาห์</option>
+                        </select>
+                        <a href="#reportSection">ดูรายงาน　›</a>
+                    </div>
+                </div>
+                <div class="dashboard-chart" id="dashboardWeeklyChart" aria-label="กราฟกำไรรายสัปดาห์"></div>
+            </section>
+        </div>
+
+        <div class="dashboard-lower-grid">
+            <section class="dashboard-card">
+                <div class="dashboard-card-heading">
+                    <h2>▧　สต็อกอาหารวัว</h2>
+                    <a href="#feedSection">ดูทั้งหมด　›</a>
+                </div>
+                <div class="stock-list">
+                    <div class="stock-summary-header" aria-hidden="true">
+                        <span>ชนิดอาหาร</span><span>คงเหลือ</span><span>ซื้อมา</span><span>ยอดซื้อ</span>
+                    </div>
+                    <div class="stock-list" id="dashboardFeedStock"></div>
+                </div>
+            </section>
+            <section class="dashboard-card">
+                <div class="dashboard-card-heading">
+                    <h2>♟　แจ้งเตือนฟาร์ม</h2>
+                    <a href="#feedSection">ดูทั้งหมด　›</a>
+                </div>
+                <div class="alert-list" id="dashboardAlerts"></div>
+            </section>
+        </div>
+
+        </div>
+
+        <!-- จัดการวัว -->
+        <section class="panel" id="cowSection">
+            <div class="section-title">
+                <h2>🐄 จัดการซื้อวัวเข้า</h2>
+                <p>กรอกข้อมูลวัวแต่ละตัว โดยใช้รหัสวัวไม่ซ้ำกัน</p>
+            </div>
+            <form id="cowForm">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="cowMarket">ตลาดที่ซื้อ *</label>
+                        <input id="cowMarket" required placeholder="เช่น ตลาดนัดวัว">
+                    </div>
+                    <div class="field">
+                        <label for="cowDate">วันที่ซื้อ *</label>
+                        <input id="cowDate" type="text" inputmode="numeric" placeholder="วว/ดด/พ.ศ. เช่น 15/10/2569" pattern="[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}" title="กรอกวันที่เป็น วว/ดด/พ.ศ. เช่น 15/10/2569" required>
+                    </div>
+                    <div class="field">
+                        <label for="cowEntryCount">จำนวนวัวที่ซื้อ *</label>
+                        <input id="cowEntryCount" type="number" min="1" max="100" step="1" value="1" required>
+                    </div>
+                    <div class="field">
+                        <label for="cowNote">หมายเหตุ</label>
+                        <input id="cowNote" placeholder="รายละเอียดเพิ่มเติม">
+                    </div>
+                </div>
+                <div class="cow-entry-heading">
+                    <h3>รหัสวัวและราคา</h3>
+                    <span class="muted" id="cowEntryProgress" aria-live="polite">กรอกรหัสแล้ว 0 / 1 ตัว</span>
+                </div>
+                <div id="cowEntryList"></div>
+                <button class="btn btn-light" id="addCowEntry" type="button">＋ เพิ่มวัว</button>
+                <div class="form-actions">
+                    <button class="btn" type="submit">＋ บันทึกซื้อวัว</button>
+                    <button class="btn btn-light" type="reset">ล้างข้อมูล</button>
+                </div>
+            </form>
+
+            <div class="summary-row" style="margin-top:24px">
+                <div class="summary-box"><span>ซื้อวัวทั้งหมด</span><strong id="cowBoughtCount">0 ตัว</strong></div>
+                <div class="summary-box"><span>ต้นทุนซื้อวัวทั้งหมด</span><strong id="cowBoughtCost">฿0</strong></div>
+                <div class="summary-box"><span>ยังอยู่ในฟาร์ม</span><strong id="cowAvailableCount">0 ตัว</strong></div>
+            </div>
+
+            <div class="section-title">
+                <h2>ประวัติซื้อวัว</h2>
+                <p>ค้นหาด้วยรหัสวัว ตลาดที่ซื้อ หรือหมายเหตุ</p>
+            </div>
+            <div class="field" style="margin-bottom:14px">
+                <input id="cowSearch" placeholder="🔍 ค้นหารหัสวัว ตลาด หรือหมายเหตุ...">
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>รหัสวัว</th><th>วันที่ซื้อ</th>
+                            <th>ราคาซื้อ</th><th>หมายเหตุ</th><th>สถานะ</th><th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cowTable"></tbody>
+                    <tfoot id="cowTableTotal"></tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- ส่งวัว -->
+        <section class="panel" id="saleSection">
+            <div class="section-title">
+                <h2>🚚 บันทึกส่งวัว / ขายวัว</h2>
+                <p>เลือกวัวที่ยังอยู่ในฟาร์ม ระบบจะคำนวณกำไรจากราคาขายหักราคาซื้อ</p>
+            </div>
+            <form id="saleForm">
+                <div class="form-grid">
+                    <div class="field field-full">
+                        <label for="saleCowSearch">ค้นหารหัสวัว *</label>
+                        <div class="sale-cow-picker">
+                            <input id="saleCowSearch" autocomplete="off" aria-controls="saleCowSuggestions" aria-autocomplete="list" required placeholder="พิมพ์รหัสวัว เช่น A001">
+                            <div id="saleCowSuggestions" class="sale-cow-suggestions" role="listbox" aria-label="รายการวัวแนะนำ"></div>
+                        </div>
+                        <input id="saleCowId" type="hidden" required>
+                    </div>
+                    <div class="field">
+                        <label for="saleCowCost">ราคาซื้อวัว (บาท)</label>
+                        <input id="saleCowCost" type="text" readonly placeholder="เลือกวัวเพื่อแสดงราคาซื้อ">
+                    </div>
+                    <div class="field">
+                        <label for="saleDate">วันที่ส่งวัว *</label>
+                        <input id="saleDate" type="text" inputmode="numeric" placeholder="วว/ดด/พ.ศ. เช่น 15/10/2569" pattern="[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}" title="กรอกวันที่เป็น วว/ดด/พ.ศ. เช่น 15/10/2569" required>
+                    </div>
+                    <div class="field">
+                        <label for="salePrice">ราคาขาย (บาท) *</label>
+                        <input id="salePrice" type="number" min="0" step="0.01" required placeholder="เช่น 32000">
+                    </div>
+                    <div class="field field-full">
+                        <label for="saleNote">หมายเหตุ</label>
+                        <input id="saleNote" placeholder="เช่น ตลาดปลายทางหรือค่าขนส่ง">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn" type="submit">บันทึกการส่งวัว</button>
+                </div>
+            </form>
+            <div class="table-wrap" style="margin-top:24px">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>รหัสวัว</th><th>วันที่ขาย</th><th>ราคาซื้อ</th>
+                            <th>หมายเหตุ</th><th>ราคาขาย</th><th>กำไร/ขาดทุน</th><th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="saleTable"></tbody>
+                    <tfoot id="saleTableTotal"></tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- อาหารวัว -->
+        <section class="panel" id="feedSection">
+            <div class="section-title">
+                <h2>🌾 จัดการสต็อกอาหารวัว</h2>
+                <p>บันทึกซื้ออาหาร ตรวจสอบยอดคงเหลือ และบันทึกการเบิกใช้</p>
+            </div>
+
+            <h3 style="margin-bottom:12px;color:var(--dark)">ซื้ออาหารเข้า</h3>
+            <form id="feedPurchaseForm">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="feedName">ชื่ออาหาร *</label>
+                        <input id="feedName" required placeholder="เช่น อาหารเม็ด">
+                    </div>
+                    <div class="field">
+                        <label for="feedQuantity">จำนวนที่ซื้อ *</label>
+                        <input id="feedQuantity" type="number" min="0.01" step="0.01" required placeholder="เช่น 10">
+                    </div>
+                    <div class="field">
+                        <label for="feedUnit">หน่วย *</label>
+                        <select id="feedUnit" required>
+                            <option value="กระสอบ">กระสอบ</option>
+                            <option value="กิโลกรัม">กิโลกรัม</option>
+                            <option value="ถุง">ถุง</option>
+                            <option value="ตัน">ตัน</option>
+                            <option value="ถัง">ถัง</option>
+                            <option value="ชิ้น">ชิ้น</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="feedCost">ราคาต่อหน่วย (บาท) *</label>
+                        <input id="feedCost" type="number" min="0" step="0.01" required placeholder="เช่น 350">
+                        <div class="muted" id="feedPurchaseTotalPreview" aria-live="polite">ราคารวม: ฿0</div>
+                    </div>
+                    <div class="field">
+                        <label for="feedDate">วันที่ซื้อ *</label>
+                        <input id="feedDate" type="text" inputmode="numeric" placeholder="วว/ดด/พ.ศ. เช่น 15/10/2569" pattern="[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}" title="กรอกวันที่เป็น วว/ดด/พ.ศ. เช่น 15/10/2569" required>
+                    </div>
+                    <div class="field">
+                        <label for="feedNote">หมายเหตุ</label>
+                        <input id="feedNote" placeholder="เช่น ร้านที่ซื้อ">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn" type="submit">＋ บันทึกซื้ออาหาร</button>
+                </div>
+            </form>
+
+            <hr style="border:0;border-top:1px solid var(--border);margin:25px 0">
+
+            <h3 style="margin-bottom:12px;color:var(--dark)">เบิกอาหารไปใช้</h3>
+            <form id="feedUseForm">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="useFeedId">เลือกสต็อกอาหาร *</label>
+                        <select id="useFeedId" required>
+                            <option value="">-- เลือกอาหาร --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="useQuantity">จำนวนที่ใช้ *</label>
+                        <input id="useQuantity" type="number" min="0.01" step="0.01" required placeholder="จำนวนที่เบิก">
+                    </div>
+                    <div class="field">
+                        <label for="useDate">วันที่ใช้ *</label>
+                        <input id="useDate" type="text" inputmode="numeric" placeholder="วว/ดด/พ.ศ. เช่น 15/10/2569" pattern="[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}" title="กรอกวันที่เป็น วว/ดด/พ.ศ. เช่น 15/10/2569" required>
+                    </div>
+                    <div class="field field-full">
+                        <label for="useNote">หมายเหตุ</label>
+                        <input id="useNote" placeholder="เช่น ให้อาหารวัวกลุ่มไหน">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn" type="submit">บันทึกการเบิกใช้</button>
+                </div>
+            </form>
+
+            <div class="section-title" style="margin-top:28px">
+                <h2>ยอดอาหารคงเหลือ</h2>
+                <p>สต็อกคำนวณจากจำนวนซื้อ หักด้วยจำนวนที่เบิกใช้</p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ชื่ออาหาร</th><th>ยอดซื้อ</th><th>ยอดใช้</th>
+                            <th>คงเหลือ</th><th>หน่วย</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedStockTable"></tbody>
+                    <tfoot id="feedStockTableTotal"></tfoot>
+                </table>
+            </div>
+
+            <div class="section-title" style="margin-top:28px">
+                <h2>ประวัติซื้ออาหาร</h2>
+                <p>ยอดสุทธิจะแสดงจำนวนรวมโดยแยกตามหน่วย เช่น กระสอบและกิโลกรัม</p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>วันที่</th><th>ชื่ออาหาร</th><th>จำนวน</th>
+                            <th>หน่วย</th><th>ราคารวม</th><th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedPurchaseTable"></tbody>
+                    <tfoot id="feedPurchaseTableTotal"></tfoot>
+                </table>
+            </div>
+
+            <div class="section-title" style="margin-top:28px">
+                <h2>ประวัติการเบิกใช้</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>วันที่</th><th>ชื่ออาหาร</th><th>จำนวนที่ใช้</th>
+                            <th>หน่วย</th><th>หมายเหตุ</th><th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedUseTable"></tbody>
+                    <tfoot id="feedUseTableTotal"></tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- รายงาน -->
+        <section class="panel" id="reportSection">
+            <div class="section-title">
+                <h2>📊 รายงานกำไรประจำสัปดาห์</h2>
+                <p>คำนวณจากวัวที่ขายในแต่ละสัปดาห์ โดยหักต้นทุนซื้อวัวของตัวนั้น</p>
+            </div>
+            <div class="notice">
+                หมายเหตุ: กำไรในตารางนี้ยังไม่หักค่าอาหาร ค่าแรง ค่าขนส่ง หรือค่าใช้จ่ายอื่น ๆ
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>สัปดาห์ (วันเริ่มต้น)</th><th>จำนวนวัวที่ขาย</th>
+                            <th>ยอดขายรวม</th><th>ต้นทุนวัว</th><th>กำไร/ขาดทุน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyTable"></tbody>
+                    <tfoot id="weeklyTableTotal"></tfoot>
+                </table>
+            </div>
+        </section>
+    </main>
+    <footer id="farmFooter">MY COW FARM · ระบบจัดการฟาร์มวัวของฉัน</footer>
+</div>
+
+<!-- หน้าต่างล็อกอิน/สมัครสมาชิก -->
+<div class="modal hidden" id="authModal">
+    <div class="modal-card">
+        <h2 id="authTitle">เข้าสู่ระบบ</h2>
+        <p class="muted" id="authDescription">เข้าสู่ระบบฟาร์มของคุณ</p>
+        <form id="authForm">
+            <div id="registerFields" class="hidden">
+                <div class="field">
+                    <label for="regFarm">ชื่อฟาร์ม *</label>
+                    <input id="regFarm" placeholder="เช่น ฟาร์มสุขใจ">
+                </div>
+                <div class="field">
+                    <label for="regPhone">เบอร์โทรศัพท์</label>
+                    <input id="regPhone" type="tel" placeholder="เบอร์โทรศัพท์">
+                </div>
+            </div>
+            <div class="field">
+                <label for="authUsername">ชื่อผู้ใช้ *</label>
+                <input id="authUsername" required autocomplete="username" placeholder="ตั้งชื่อผู้ใช้">
+            </div>
+            <div class="field">
+                <label for="authPassword">รหัสผ่าน *</label>
+                <input id="authPassword" type="password" required autocomplete="current-password" placeholder="รหัสผ่าน">
+            </div>
+            <button class="btn" type="submit" id="authSubmit">เข้าสู่ระบบ</button>
+        </form>
+        <div class="modal-switch">
+            <span id="authSwitchText">ยังไม่มีบัญชี?</span>
+            <button class="link-button" id="authSwitch" type="button" onclick="switchAuth()">สมัครสมาชิก</button>
+        </div>
+        <div class="modal-switch">
+            <button class="link-button" type="button" onclick="closeAuth()">ปิดหน้าต่าง</button>
+        </div>
+        <p class="muted" style="margin-top:16px">บัญชีและการเข้าสู่ระบบจัดเก็บใน SQLite · ข้อมูลฟาร์มจัดเก็บในเบราว์เซอร์เครื่องนี้</p>
+    </div>
+</div>
+
+<div id="toast" class="hidden" role="status"></div>
+
+<script>
+"use strict";
+
+/* ===== เครื่องมือทั่วไป ===== */
+const $ = id => document.getElementById(id);
+const money = value => Number(value || 0).toLocaleString("th-TH", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+});
+const today = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+};
+const formatBuddhistDate = value => {
+    if (!value) return "";
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) return value;
+    return `${match[3]}/${match[2]}/${Number(match[1]) + 543}`;
+};
+const dateText = value => formatBuddhistDate(value) || "-";
+function parseBuddhistDate(value) {
+    const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(value.trim());
+    if (!match) return "";
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const buddhistYear = Number(match[3]);
+    const year = buddhistYear - 543;
+    if (buddhistYear < 2400 || year < 1850 || year > 9999 ||
+        month < 1 || month > 12 || day < 1) return "";
+    const date = new Date(Date.UTC(year, month - 1, day));
+    if (date.getUTCFullYear() !== year ||
+        date.getUTCMonth() !== month - 1 ||
+        date.getUTCDate() !== day) return "";
+    return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+}[ch]));
+
+function toast(message) {
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.remove("hidden");
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => el.classList.add("hidden"), 3000);
+}
+
+function readJSON(key, fallback) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+    } catch (error) {
+        console.error(error);
+        return fallback;
+    }
+}
+
+function writeJSON(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+async function apiRequest(url, options = {}) {
+    if (location.protocol === "file:") {
+        throw new Error("กำลังเปิดไฟล์ HTML โดยตรง กรุณาเปิด PowerShell ในโฟลเดอร์เว็บ รัน npm start แล้วเข้า http://127.0.0.1:3000");
+    }
+
+    let response;
+    try {
+        response = await fetch(url, {
+            ...options,
+            credentials: "same-origin",
+            headers: {
+                ...(options.body ? { "Content-Type": "application/json" } : {}),
+                ...options.headers
+            }
+        });
+    } catch (error) {
+        throw new Error("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจสอบว่าเซิร์ฟเวอร์กำลังทำงาน");
+    }
+
+    const responseText = response.status === 204 ? "" : await response.text();
+    let result = null;
+    if (responseText) {
+        try {
+            result = JSON.parse(responseText);
+        } catch (error) {
+            throw new Error(`เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON (HTTP ${response.status}) กรุณาเปิดเว็บผ่าน http://127.0.0.1:3000`);
+        }
+    }
+    if (!response.ok) {
+        const error = new Error(result?.error || `คำขอล้มเหลว (${response.status})`);
+        error.status = response.status;
+        throw error;
+    }
+    return result;
+}
+
+/* ===== ข้อมูลแยกตามบัญชี ===== */
+let currentAccount = null;
+let authMode = "login";
+let farmData = { cows: [], sales: [], feedPurchases: [], feedUses: [] };
+
+function dataKey() {
+    return currentAccount ? `myCowFarmData_${currentAccount.id}` : "";
+}
+
+function loadFarmData() {
+    farmData = readJSON(dataKey(), {
+        cows: [], sales: [], feedPurchases: [], feedUses: []
+    });
+    farmData.cows ||= [];
+    farmData.sales ||= [];
+    farmData.feedPurchases ||= [];
+    farmData.feedUses ||= [];
+}
+
+function saveFarmData() {
+    if (!currentAccount) return;
+    writeJSON(dataKey(), farmData);
+    renderAll();
+}
+
+function uid() {
+    return `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/* ===== สมัครสมาชิกและเข้าสู่ระบบ ===== */
+/* หมายเหตุ: ระบบนี้เหมาะสำหรับทดลองในเครื่องเดียว ไม่ใช่ระบบยืนยันตัวตนสำหรับใช้งานจริง */
+function openAuth(mode) {
+    authMode = mode;
+    updateAuthForm();
+    $("authModal").classList.remove("hidden");
+}
+
+function closeAuth() {
+    $("authModal").classList.add("hidden");
+}
+
+function switchAuth() {
+    authMode = authMode === "login" ? "register" : "login";
+    updateAuthForm();
+}
+
+function updateAuthForm() {
+    const registering = authMode === "register";
+    $("authTitle").textContent = registering ? "สร้างบัญชีฟาร์ม" : "เข้าสู่ระบบ";
+    $("authDescription").textContent = registering
+        ? "สร้างบัญชีเพื่อเริ่มจัดการฟาร์มของคุณ"
+        : "เข้าสู่ระบบเพื่อดูข้อมูลฟาร์มของคุณ";
+    $("registerFields").classList.toggle("hidden", !registering);
+    $("regFarm").required = registering;
+    $("authSubmit").textContent = registering ? "สมัครสมาชิก" : "เข้าสู่ระบบ";
+    $("authSwitchText").textContent = registering ? "มีบัญชีแล้ว?" : "ยังไม่มีบัญชี?";
+    $("authSwitch").textContent = registering ? "เข้าสู่ระบบ" : "สมัครสมาชิก";
+    $("authPassword").autocomplete = registering ? "new-password" : "current-password";
+}
+
+$("authForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    const username = $("authUsername").value.trim();
+    const password = $("authPassword").value;
+
+    if (username.length < 3 || password.length < 4) {
+        toast("ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัว และรหัสผ่านอย่างน้อย 4 ตัว");
+        return;
+    }
+
+    try {
+        const registering = authMode === "register";
+        const result = await apiRequest(registering ? "/api/register" : "/api/login", {
+            method: "POST",
+            body: JSON.stringify(registering ? {
+                username,
+                password,
+                farmName: $("regFarm").value.trim(),
+                phone: $("regPhone").value.trim()
+            } : { username, password })
+        });
+        currentAccount = result.account;
+        loadFarmData();
+        enterApp();
+        closeAuth();
+        toast(registering ? "สมัครสมาชิกสำเร็จ 💚" : "เข้าสู่ระบบสำเร็จ");
+    } catch (error) {
+        toast(error.message || "เชื่อมต่อฐานข้อมูลไม่ได้ กรุณาตรวจสอบว่าเซิร์ฟเวอร์กำลังทำงาน");
+    }
+});
+
+async function migrateLegacyAccounts() {
+    const legacyAccounts = readJSON("myCowFarmAccounts", []);
+    if (!Array.isArray(legacyAccounts) || legacyAccounts.length === 0) return;
+    const result = await apiRequest("/api/migrate-accounts", {
+        method: "POST",
+        body: JSON.stringify({ accounts: legacyAccounts })
+    });
+    const migratedIds = new Set(result.migratedIds);
+    const remainingAccounts = legacyAccounts.filter(account => !migratedIds.has(account.id));
+    if (remainingAccounts.length) writeJSON("myCowFarmAccounts", remainingAccounts);
+    else localStorage.removeItem("myCowFarmAccounts");
+    if (result.skippedIds.length) {
+        toast("บัญชีเดิมบางบัญชีซ้ำกับฐานข้อมูล กรุณาเข้าสู่ระบบด้วยบัญชีนั้น");
+    }
+}
+
+async function restoreSession() {
+    try {
+        await migrateLegacyAccounts();
+        const result = await apiRequest("/api/session");
+        currentAccount = result.account;
+        loadFarmData();
+        enterApp();
+    } catch (error) {
+        if (error.status !== 401) {
+            toast(error.message || "เชื่อมต่อฐานข้อมูลไม่ได้ กรุณาเปิดเว็บผ่านเซิร์ฟเวอร์ด้วยคำสั่ง npm start");
+        }
+    }
+}
+
+function enterApp() {
+    $("cover").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    updateFarmBrand();
+    setDefaultDates();
+    renderAll();
+    showPage(location.hash.slice(1) || "dashboard", false);
+    window.scrollTo(0, 0);
+}
+
+function updateFarmBrand() {
+    const farmName = currentAccount?.farmName || "ฟาร์มของฉัน";
+    const username = currentAccount?.username || "ผู้ดูแลฟาร์ม";
+    $("welcomeTitle").textContent = farmName;
+    $("brandName").textContent = farmName;
+    $("profileUsername").textContent = username;
+    $("profileFarmName").textContent = farmName;
+    $("profileAvatar").textContent = [...username][0]?.toLocaleUpperCase("th-TH") || "ฟ";
+    $("farmFooter").textContent = `${farmName} · ระบบจัดการฟาร์มวัว`;
+    document.title = `${farmName} | ระบบจัดการฟาร์มวัว`;
+}
+
+async function logout() {
+    try {
+        await apiRequest("/api/logout", { method: "POST" });
+    } catch (error) {
+        console.error(error);
+        toast(error.message || "ออกจากระบบไม่สำเร็จ");
+        return;
+    }
+    currentAccount = null;
+    farmData = { cows: [], sales: [], feedPurchases: [], feedUses: [] };
+    $("app").classList.add("hidden");
+    $("cover").classList.remove("hidden");
+    document.title = "MY COW FARM | ระบบจัดการฟาร์มวัว";
+    window.scrollTo(0, 0);
+    toast("ออกจากระบบแล้ว");
+}
+
+async function editFarmName() {
+    const name = prompt("กรอกชื่อฟาร์มใหม่", currentAccount.farmName || "");
+    if (name === null) return;
+    const clean = name.trim();
+    if (!clean) {
+        toast("ชื่อฟาร์มต้องไม่เป็นค่าว่าง");
+        return;
+    }
+    try {
+        const result = await apiRequest("/api/account", {
+            method: "PATCH",
+            body: JSON.stringify({ farmName: clean })
+        });
+        currentAccount = result.account;
+        updateFarmBrand();
+        toast("แก้ไขชื่อฟาร์มแล้ว");
+    } catch (error) {
+        console.error(error);
+        toast(error.message || "บันทึกชื่อฟาร์มไม่สำเร็จ");
+    }
+}
+
+function setDefaultDates() {
+    ["cowDate", "saleDate", "feedDate", "useDate"].forEach(id => {
+        if (!$(id).value) $(id).value = formatBuddhistDate(today());
+    });
+}
+
+/* ===== ซื้อวัวเข้า ===== */
+function cowEntryRows() {
+    return [...$("cowEntryList").querySelectorAll(".cow-entry-row")];
+}
+
+function totalsByUnit(items, quantityField = "quantity") {
+    const totals = new Map();
+    items.forEach(item => {
+        totals.set(item.unit, (totals.get(item.unit) || 0) + Number(item[quantityField] || 0));
+    });
+    return [...totals].map(([unit, quantity]) => ({ unit, quantity }));
+}
+
+function quantityTotalsText(items, quantityField = "quantity") {
+    const totals = totalsByUnit(items, quantityField);
+    return totals.length
+        ? totals.map(total => `${money(total.quantity)} ${total.unit}`).join(", ")
+        : "0";
+}
+
+function updateCowEntryProgress() {
+    const completed = cowEntryRows().filter(row =>
+        row.querySelector('[data-field="id"]').value.trim() &&
+        row.querySelector('[data-field="price"]').value !== ""
+    ).length;
+    $("cowEntryProgress").textContent =
+        `กรอกรหัสแล้ว ${completed} / ${$("cowEntryCount").value || 1} ตัว`;
+}
+
+function addCowEntryRow() {
+    const rowNumber = cowEntryRows().length + 1;
+    const rowId = uid();
+    const row = document.createElement("div");
+    row.className = "cow-entry-row";
+    row.innerHTML = `
+        <div class="field">
+            <label for="cowEntryId_${rowId}">รหัสวัว ${rowNumber} *</label>
+            <input id="cowEntryId_${rowId}" data-field="id" required placeholder="เช่น C001" autocomplete="off">
+        </div>
+        <div class="field">
+            <label for="cowEntryPrice_${rowId}">ราคาซื้อ (บาท) *</label>
+            <input id="cowEntryPrice_${rowId}" data-field="price" type="number" min="0" step="0.01" required placeholder="เช่น 25000">
+        </div>
+        <button class="btn btn-danger btn-small remove-cow-entry" type="button" aria-label="ลบแถววัว ${rowNumber}">ลบ</button>
+    `;
+    $("cowEntryList").appendChild(row);
+    row.querySelector('[data-field="id"]').addEventListener("input", updateCowEntryProgress);
+    row.querySelector('[data-field="price"]').addEventListener("input", updateCowEntryProgress);
+    updateCowEntryProgress();
+}
+
+function setCowEntryCount(value) {
+    const count = Number(value);
+    if (!Number.isInteger(count) || count < 1 || count > 100) {
+        toast("จำนวนวัวที่ซื้อต้องอยู่ระหว่าง 1 ถึง 100 ตัว");
+        $("cowEntryCount").value = cowEntryRows().length || 1;
+        return;
+    }
+    let rows = cowEntryRows();
+    if (count < rows.length) {
+        const rowsToRemove = rows.slice(count);
+        if (rowsToRemove.some(row =>
+            row.querySelector('[data-field="id"]').value.trim() ||
+            row.querySelector('[data-field="price"]').value !== ""
+        )) {
+            toast("ลบข้อมูลรหัสวัวและราคาในแถวท้ายก่อนลดจำนวน");
+            $("cowEntryCount").value = rows.length;
+            return;
+        }
+        rowsToRemove.forEach(row => row.remove());
+    } else {
+        while (rows.length < count) {
+            addCowEntryRow();
+            rows = cowEntryRows();
+        }
+    }
+    updateCowEntryProgress();
+}
+
+function resetCowEntries() {
+    $("cowEntryCount").value = "1";
+    $("cowEntryList").replaceChildren();
+    addCowEntryRow();
+}
+
+resetCowEntries();
+
+$("cowEntryCount").addEventListener("change", event => {
+    setCowEntryCount(event.target.value);
+});
+
+$("addCowEntry").addEventListener("click", () => {
+    const count = cowEntryRows().length;
+    if (count >= 100) {
+        toast("เพิ่มรายการได้สูงสุด 100 ตัวต่อครั้ง");
+        return;
+    }
+    $("cowEntryCount").value = String(count + 1);
+    addCowEntryRow();
+});
+
+$("cowEntryList").addEventListener("click", event => {
+    const removeButton = event.target.closest(".remove-cow-entry");
+    if (!removeButton) return;
+    const rows = cowEntryRows();
+    if (rows.length <= 1) {
+        toast("ต้องมีรายการซื้อวัวอย่างน้อย 1 ตัว");
+        return;
+    }
+    const row = removeButton.closest(".cow-entry-row");
+    if (row.querySelector('[data-field="id"]').value.trim() ||
+        row.querySelector('[data-field="price"]').value !== "") {
+        if (!confirm("ลบข้อมูลรหัสวัวและราคาในแถวนี้หรือไม่?")) return;
+    }
+    row.remove();
+    cowEntryRows().forEach((entry, index) => {
+        entry.querySelector('[data-field="id"]').labels[0].textContent = `รหัสวัว ${index + 1} *`;
+        entry.querySelector(".remove-cow-entry").setAttribute("aria-label", `ลบแถววัว ${index + 1}`);
+    });
+    $("cowEntryCount").value = String(cowEntryRows().length);
+    updateCowEntryProgress();
+});
+
+$("cowForm").addEventListener("reset", () => {
+    setTimeout(resetCowEntries, 0);
+});
+
+$("cowForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const market = $("cowMarket").value.trim();
+    const date = parseBuddhistDate($("cowDate").value);
+    const entries = cowEntryRows().map(row => ({
+        id: row.querySelector('[data-field="id"]').value.trim(),
+        price: Number(row.querySelector('[data-field="price"]').value)
+    }));
+
+    if (!market || !date || entries.length !== Number($("cowEntryCount").value) ||
+        entries.some(entry => !entry.id || !Number.isFinite(entry.price) || entry.price < 0)) {
+        toast("ตรวจสอบข้อมูลซื้อวัวให้ครบก่อนนะ");
+        return;
+    }
+    const ids = entries.map(entry => entry.id.toLowerCase());
+    if (new Set(ids).size !== ids.length) {
+        toast("รหัสวัวในรายการซ้ำกัน กรุณาใช้รหัสไม่ซ้ำกัน");
+        return;
+    }
+    if (farmData.cows.some(c => ids.includes(c.id.toLowerCase()))) {
+        toast("มีรหัสวัวนี้ในประวัติแล้ว ต้องใช้รหัสไม่ซ้ำกัน");
+        return;
+    }
+
+    const note = $("cowNote").value.trim();
+    const createdAt = Date.now();
+    farmData.cows.push(...entries.map(entry => ({
+        ...entry, market, date, note, createdAt
+    })));
+    $("cowForm").reset();
+    $("cowDate").value = formatBuddhistDate(today());
+    saveFarmData();
+    toast(`บันทึกซื้อวัว ${entries.length} ตัวเรียบร้อย 🐄`);
+});
+
+function getSale(cowId) {
+    return farmData.sales.find(s => s.cowId === cowId);
+}
+
+function renderCows() {
+    const search = $("cowSearch").value.trim().toLowerCase();
+    const cows = [...farmData.cows].filter(c =>
+        c.id.toLowerCase().includes(search) ||
+        c.market.toLowerCase().includes(search) ||
+        (c.note || "").toLowerCase().includes(search)
+    ).sort((a,b) => b.date.localeCompare(a.date));
+
+    $("cowBoughtCount").textContent = `${farmData.cows.length} ตัว`;
+    $("cowBoughtCost").textContent = `฿${money(farmData.cows.reduce((sum,c) => sum+c.price,0))}`;
+    $("cowAvailableCount").textContent = `${farmData.cows.filter(c => !getSale(c.id)).length} ตัว`;
+
+    const marketGroups = new Map();
+    cows.forEach(cow => {
+        const market = cow.market.trim() || "ไม่ระบุตลาด";
+        if (!marketGroups.has(market)) marketGroups.set(market, []);
+        marketGroups.get(market).push(cow);
+    });
+    $("cowTable").innerHTML = cows.length ? [...marketGroups].map(([market, marketCows]) => `
+        <tr class="table-group-heading">
+            <td colspan="6">ตลาดที่ซื้อ: ${escapeHTML(market)} (${marketCows.length} ตัว)</td>
+        </tr>
+        ${marketCows.map(c => {
+            const sale = getSale(c.id);
+            return `<tr>
+                <td><strong>${escapeHTML(c.id)}</strong></td>
+                <td>${dateText(c.date)}</td>
+                <td>฿${money(c.price)}</td>
+                <td>${escapeHTML(c.note || "-")}</td>
+                <td><span class="status ${sale ? "status-out":"status-in"}">${sale ? "ส่งขายแล้ว":"อยู่ในฟาร์ม"}</span></td>
+                <td><button class="btn btn-danger btn-small" onclick="deleteCow('${encodeURIComponent(c.id)}')">ลบ</button></td>
+            </tr>`;
+        }).join("")}
+        <tr class="table-total">
+            <td colspan="2">ยอดสุทธิตลาด ${escapeHTML(market)} (${marketCows.length} ตัว)</td>
+            <td>฿${money(marketCows.reduce((sum, cow) => sum + cow.price, 0))}</td>
+            <td>-</td><td colspan="2">-</td>
+        </tr>
+    `).join("") : `<tr><td colspan="6" class="empty">ยังไม่มีรายการซื้อวัว</td></tr>`;
+    $("cowTableTotal").innerHTML = `<tr class="table-total">
+        <td colspan="2">ยอดสุทธิ (${cows.length} ตัว)</td>
+        <td>฿${money(cows.reduce((sum, cow) => sum + cow.price, 0))}</td>
+        <td>-</td><td colspan="2">-</td>
+    </tr>`;
+
+    const available = farmData.cows.filter(c => !getSale(c.id));
+    const selectedCow = available.find(c => c.id === $("saleCowId").value);
+    if (!selectedCow) {
+        $("saleCowId").value = "";
+        $("saleCowSearch").value = "";
+        $("saleCowCost").value = "";
+    }
+    renderSaleCowSuggestions();
+
+    $("statCows").textContent = `${available.length} ตัว`;
+}
+
+function deleteCow(encodedId) {
+    const id = decodeURIComponent(encodedId);
+    if (getSale(id)) {
+        toast("วัวตัวนี้ส่งขายแล้ว จึงลบไม่ได้ เพื่อเก็บประวัติกำไรให้ถูกต้อง");
+        return;
+    }
+    if (!confirm(`ยืนยันลบรหัสวัว ${id} หรือไม่?`)) return;
+    farmData.cows = farmData.cows.filter(c => c.id !== id);
+    saveFarmData();
+    toast("ลบรายการซื้อวัวแล้ว");
+}
+
+$("cowSearch").addEventListener("input", renderCows);
+
+/* ===== ส่งวัว ===== */
+function updateSelectedSaleCow() {
+    const typedId = $("saleCowSearch").value.trim().toLowerCase();
+    const cow = farmData.cows.find(c =>
+        c.id.toLowerCase() === typedId && !getSale(c.id)
+    );
+    $("saleCowId").value = cow ? cow.id : "";
+    $("saleCowCost").value = cow ? `฿${money(cow.price)}` : "";
+    renderSaleCowSuggestions();
+}
+
+function renderSaleCowSuggestions() {
+    const query = $("saleCowSearch").value.trim().toLowerCase();
+    const suggestions = $("saleCowSuggestions");
+    if (!query || $("saleCowId").value) {
+        suggestions.replaceChildren();
+        return;
+    }
+
+    const matches = farmData.cows
+        .filter(c => !getSale(c.id) && (
+            c.id.toLowerCase().includes(query) ||
+            c.market.toLowerCase().includes(query)
+        ))
+        .slice(0, 8);
+
+    suggestions.innerHTML = matches.length ? matches.map(c => `
+        <button class="sale-cow-suggestion" type="button" role="option"
+            data-cow-id="${escapeHTML(c.id)}" aria-selected="false">
+            <strong>${escapeHTML(c.id)}</strong>
+            <span>ตลาด ${escapeHTML(c.market)} · ราคาซื้อ ฿${money(c.price)}</span>
+        </button>
+    `).join("") : `<div class="sale-cow-suggestion-empty">ไม่พบวัวที่ตรงกับคำค้น</div>`;
+}
+
+$("saleCowSearch").addEventListener("input", updateSelectedSaleCow);
+$("saleCowSuggestions").addEventListener("click", event => {
+    const suggestion = event.target.closest("[data-cow-id]");
+    if (!suggestion) return;
+    $("saleCowSearch").value = suggestion.dataset.cowId;
+    updateSelectedSaleCow();
+});
+
+$("saleForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const cowId = $("saleCowId").value;
+    const date = parseBuddhistDate($("saleDate").value);
+    const price = Number($("salePrice").value);
+    const cow = farmData.cows.find(c => c.id === cowId);
+
+    if (!cow || $("saleCowSearch").value.trim().toLowerCase() !== cow.id.toLowerCase() ||
+        getSale(cowId) || !date || !Number.isFinite(price) || price < 0) {
+        toast("กรุณาเลือกวัวที่ยังอยู่ในฟาร์ม และกรอกข้อมูลให้ครบ");
+        return;
+    }
+
+    farmData.sales.push({
+        id: uid(),
+        cowId,
+        date,
+        price,
+        cost: cow.price,
+        note: $("saleNote").value.trim()
+    });
+    $("saleForm").reset();
+    $("saleCowId").value = "";
+    $("saleCowCost").value = "";
+    $("saleDate").value = formatBuddhistDate(today());
+    saveFarmData();
+    toast("บันทึกการส่งวัวเรียบร้อย");
+});
+
+function deleteSale(id) {
+    const sale = farmData.sales.find(s => s.id === id);
+    if (!sale) return;
+    if (!confirm(`ยืนยันลบประวัติการส่งวัว ${sale.cowId} หรือไม่? วัวจะกลับมาเป็นวัวคงเหลือ`)) return;
+    farmData.sales = farmData.sales.filter(s => s.id !== id);
+    saveFarmData();
+    toast("ลบประวัติส่งวัวแล้ว");
+}
+
+function renderSales() {
+    const sales = [...farmData.sales].sort((a,b) => b.date.localeCompare(a.date));
+    $("saleTable").innerHTML = sales.length ? sales.map(s => {
+        const profit = s.price - s.cost;
+        return `<tr>
+            <td>${escapeHTML(s.cowId)}</td>
+            <td>${dateText(s.date)}</td>
+            <td>฿${money(s.cost)}</td>
+            <td>${escapeHTML(s.note || "-")}</td>
+            <td>฿${money(s.price)}</td>
+            <td class="${profit >= 0 ? "profit-positive":"profit-negative"}">${profit < 0 ? "-" : ""}฿${money(Math.abs(profit))}</td>
+            <td><button class="btn btn-danger btn-small" onclick="deleteSale('${s.id}')">ลบ</button></td>
+        </tr>`;
+    }).join("") : `<tr><td colspan="7" class="empty">ยังไม่มีรายการส่งวัว</td></tr>`;
+
+    const totalCost = sales.reduce((sum, sale) => sum + sale.cost, 0);
+    const totalSales = sales.reduce((sum, sale) => sum + sale.price, 0);
+    const totalProfit = totalSales - totalCost;
+    $("saleTableTotal").innerHTML = `<tr class="table-total">
+        <td colspan="2">ยอดสุทธิ (${sales.length} ตัว)</td>
+        <td>฿${money(totalCost)}</td>
+        <td>฿${money(totalSales)}</td>
+        <td class="${totalProfit >= 0 ? "profit-positive" : "profit-negative"}">${totalProfit < 0 ? "-" : ""}฿${money(Math.abs(totalProfit))}</td>
+        <td>-</td>
+        <td>-</td>
+    </tr>`;
+
+    const farmProfit = farmData.sales.reduce((sum,s) => sum + s.price - s.cost, 0);
+    $("statProfit").textContent = `${farmProfit < 0 ? "-" : ""}฿${money(Math.abs(farmProfit))}`;
+}
+
+/* ===== ซื้ออาหาร ===== */
+function updateFeedPurchaseTotal() {
+    const quantity = Number($("feedQuantity").value) || 0;
+    const unitPrice = Number($("feedCost").value) || 0;
+    $("feedPurchaseTotalPreview").textContent =
+        `ราคารวม: ฿${money(unitPrice * quantity)}`;
+}
+
+$("feedQuantity").addEventListener("input", updateFeedPurchaseTotal);
+$("feedCost").addEventListener("input", updateFeedPurchaseTotal);
+
+$("feedPurchaseForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const name = $("feedName").value.trim();
+    const quantity = Number($("feedQuantity").value);
+    const unit = $("feedUnit").value;
+    const unitPrice = Number($("feedCost").value);
+    const total = unitPrice * quantity;
+    const date = parseBuddhistDate($("feedDate").value);
+
+    if (!name || !date || !Number.isFinite(quantity) || quantity <= 0 ||
+        !Number.isFinite(unitPrice) || unitPrice < 0 || !Number.isFinite(total)) {
+        toast("กรุณาตรวจสอบข้อมูลซื้ออาหาร");
+        return;
+    }
+
+    farmData.feedPurchases.push({
+        id: uid(), name, quantity, unit, unitPrice, total, date,
+        note: $("feedNote").value.trim()
+    });
+    $("feedPurchaseForm").reset();
+    $("feedDate").value = formatBuddhistDate(today());
+    updateFeedPurchaseTotal();
+    saveFarmData();
+    toast("บันทึกซื้ออาหารแล้ว 🌾");
+});
+
+function feedKey(item) {
+    return `${item.name.trim().toLowerCase()}__${item.unit}`;
+}
+
+function getFeedStock() {
+    const stocks = {};
+    farmData.feedPurchases.forEach(p => {
+        const key = feedKey(p);
+        if (!stocks[key]) stocks[key] = {
+            key, name: p.name, unit: p.unit, bought: 0, used: 0, totalCost: 0
+        };
+        stocks[key].bought += p.quantity;
+        stocks[key].totalCost += p.total;
+    });
+    farmData.feedUses.forEach(u => {
+        const key = feedKey(u);
+        if (!stocks[key]) stocks[key] = {
+            key, name: u.name, unit: u.unit, bought: 0, used: 0, totalCost: 0
+        };
+        stocks[key].used += u.quantity;
+    });
+    return Object.values(stocks).map(s => ({
+        ...s, remaining: s.bought - s.used
+    }));
+}
+
+function renderFeedStock() {
+    const stocks = getFeedStock();
+    $("feedStockTable").innerHTML = stocks.length ? stocks.map(s => `
+        <tr>
+            <td>${escapeHTML(s.name)}</td>
+            <td>${money(s.bought)}</td>
+            <td>${money(s.used)}</td>
+            <td><strong>${money(s.remaining)}</strong></td>
+            <td>${escapeHTML(s.unit)}</td>
+        </tr>
+    `).join("") : `<tr><td colspan="5" class="empty">ยังไม่มีข้อมูลสต็อกอาหาร</td></tr>`;
+
+    const stockTotals = new Map();
+    stocks.forEach(stock => {
+        if (!stockTotals.has(stock.unit)) stockTotals.set(stock.unit, { bought: 0, used: 0, remaining: 0 });
+        const total = stockTotals.get(stock.unit);
+        total.bought += stock.bought;
+        total.used += stock.used;
+        total.remaining += stock.remaining;
+    });
+    const totals = [...stockTotals];
+    $("feedStockTableTotal").innerHTML = totals.length ? totals.map(([unit, total]) => `
+        <tr class="table-total">
+            <td>ยอดสุทธิ</td>
+            <td>${money(total.bought)}</td>
+            <td>${money(total.used)}</td>
+            <td>${money(total.remaining)}</td>
+            <td>${escapeHTML(unit)}</td>
+        </tr>
+    `).join("") : `<tr class="table-total"><td>ยอดสุทธิ</td><td>0</td><td>0</td><td>0</td><td>-</td></tr>`;
+
+    const available = stocks.filter(s => s.remaining > 0);
+    $("useFeedId").innerHTML = `<option value="">-- เลือกอาหาร --</option>` +
+        available.map(s => `<option value="${encodeURIComponent(s.key)}">${escapeHTML(s.name)} · เหลือ ${money(s.remaining)} ${escapeHTML(s.unit)}</option>`).join("");
+
+    $("statFeedTypes").textContent = `${available.length} ชนิด`;
+    $("statFeedCost").textContent = `฿${money(farmData.feedPurchases.reduce((sum,p) => sum+p.total,0))}`;
+}
+
+$("feedUseForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const key = decodeURIComponent($("useFeedId").value);
+    const quantity = Number($("useQuantity").value);
+    const date = parseBuddhistDate($("useDate").value);
+    const stock = getFeedStock().find(s => s.key === key);
+
+    if (!stock || !date || !Number.isFinite(quantity) || quantity <= 0) {
+        toast("กรุณาเลือกอาหารและกรอกจำนวนที่ถูกต้อง");
+        return;
+    }
+    if (quantity > stock.remaining + 0.000001) {
+        toast(`อาหารไม่พอ สต็อกคงเหลือ ${money(stock.remaining)} ${stock.unit}`);
+        return;
+    }
+
+    farmData.feedUses.push({
+        id: uid(), name: stock.name, unit: stock.unit,
+        quantity, date, note: $("useNote").value.trim()
+    });
+    $("feedUseForm").reset();
+    $("useDate").value = formatBuddhistDate(today());
+    saveFarmData();
+    toast("บันทึกการเบิกใช้อาหารแล้ว");
+});
+
+function deleteFeedPurchase(id) {
+    const p = farmData.feedPurchases.find(item => item.id === id);
+    if (!p) return;
+    const key = feedKey(p);
+    const boughtWithoutThis = farmData.feedPurchases
+        .filter(item => item.id !== id && feedKey(item) === key)
+        .reduce((sum,item) => sum+item.quantity,0);
+    const used = farmData.feedUses
+        .filter(item => feedKey(item) === key)
+        .reduce((sum,item) => sum+item.quantity,0);
+
+    if (used > boughtWithoutThis + 0.000001) {
+        toast("ลบรายการนี้ไม่ได้ เพราะอาหารที่ซื้อรายการอื่นไม่พอรองรับยอดเบิกใช้");
+        return;
+    }
+    if (!confirm(`ยืนยันลบรายการซื้อ ${p.name} หรือไม่?`)) return;
+    farmData.feedPurchases = farmData.feedPurchases.filter(item => item.id !== id);
+    saveFarmData();
+    toast("ลบรายการซื้ออาหารแล้ว");
+}
+
+function deleteFeedUse(id) {
+    if (!confirm("ยืนยันลบประวัติการเบิกใช้นี้หรือไม่?")) return;
+    farmData.feedUses = farmData.feedUses.filter(item => item.id !== id);
+    saveFarmData();
+    toast("ลบประวัติการเบิกใช้แล้ว");
+}
+
+function renderFeedHistory() {
+    const purchases = [...farmData.feedPurchases].sort((a,b) => b.date.localeCompare(a.date));
+    $("feedPurchaseTable").innerHTML = purchases.length ? purchases.map(p => `
+        <tr>
+            <td>${dateText(p.date)}</td>
+            <td>${escapeHTML(p.name)}</td>
+            <td>${money(p.quantity)}</td>
+            <td>${escapeHTML(p.unit)}</td>
+            <td>${Number.isFinite(p.unitPrice)
+                ? `฿${money(p.unitPrice)} × ${money(p.quantity)} ${escapeHTML(p.unit)} = ฿${money(p.total)}`
+                : `฿${money(p.total)}`}</td>
+            <td><button class="btn btn-danger btn-small" onclick="deleteFeedPurchase('${p.id}')">ลบ</button></td>
+        </tr>
+    `).join("") : `<tr><td colspan="6" class="empty">ยังไม่มีประวัติซื้ออาหาร</td></tr>`;
+    $("feedPurchaseTableTotal").innerHTML = `<tr class="table-total">
+        <td colspan="2">ยอดสุทธิ (${purchases.length} รายการ)</td>
+        <td>${quantityTotalsText(purchases)}</td>
+        <td>รวมตามหน่วย</td>
+        <td>฿${money(purchases.reduce((sum, purchase) => sum + purchase.total, 0))}</td>
+        <td>-</td>
+    </tr>`;
+
+    const uses = [...farmData.feedUses].sort((a,b) => b.date.localeCompare(a.date));
+    $("feedUseTable").innerHTML = uses.length ? uses.map(u => `
+        <tr>
+            <td>${dateText(u.date)}</td>
+            <td>${escapeHTML(u.name)}</td>
+            <td>${money(u.quantity)}</td>
+            <td>${escapeHTML(u.unit)}</td>
+            <td>${escapeHTML(u.note || "-")}</td>
+            <td><button class="btn btn-danger btn-small" onclick="deleteFeedUse('${u.id}')">ลบ</button></td>
+        </tr>
+    `).join("") : `<tr><td colspan="6" class="empty">ยังไม่มีประวัติเบิกใช้</td></tr>`;
+    $("feedUseTableTotal").innerHTML = `<tr class="table-total">
+        <td colspan="2">ยอดสุทธิ (${uses.length} รายการ)</td>
+        <td>${quantityTotalsText(uses)}</td>
+        <td>แยกหน่วย</td>
+        <td>-</td>
+        <td>-</td>
+    </tr>`;
+}
+
+/* ===== รายงานกำไรรายสัปดาห์ ===== */
+function mondayOf(dateString) {
+    const d = new Date(`${dateString}T12:00:00`);
+    const day = d.getDay();
+    d.setDate(d.getDate() + (day === 0 ? -6 : 1-day));
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function renderWeeklyReport() {
+    const weeks = {};
+    farmData.sales.forEach(s => {
+        const key = mondayOf(s.date);
+        if (!weeks[key]) weeks[key] = {
+            count: 0, sales: 0, cost: 0
+        };
+        weeks[key].count++;
+        weeks[key].sales += s.price;
+        weeks[key].cost += s.cost;
+    });
+
+    const sorted = Object.keys(weeks).sort((a,b) => b.localeCompare(a));
+    $("weeklyTable").innerHTML = sorted.length ? sorted.map(key => {
+        const w = weeks[key];
+        const profit = w.sales - w.cost;
+        return `<tr>
+            <td>สัปดาห์เริ่ม ${dateText(key)}</td>
+            <td>${w.count} ตัว</td>
+            <td>฿${money(w.sales)}</td>
+            <td>฿${money(w.cost)}</td>
+            <td class="${profit >= 0 ? "profit-positive":"profit-negative"}">${profit < 0 ? "-" : ""}฿${money(Math.abs(profit))}</td>
+        </tr>`;
+    }).join("") : `<tr><td colspan="5" class="empty">ยังไม่มีข้อมูลขายวัวสำหรับสรุปรายสัปดาห์</td></tr>`;
+    const totals = farmData.sales.reduce((summary, sale) => ({
+        count: summary.count + 1,
+        sales: summary.sales + sale.price,
+        cost: summary.cost + sale.cost
+    }), { count: 0, sales: 0, cost: 0 });
+    const totalProfit = totals.sales - totals.cost;
+    $("weeklyTableTotal").innerHTML = `<tr class="table-total">
+        <td>ยอดสุทธิ</td>
+        <td>${totals.count} ตัว</td>
+        <td>฿${money(totals.sales)}</td>
+        <td>฿${money(totals.cost)}</td>
+        <td class="${totalProfit >= 0 ? "profit-positive" : "profit-negative"}">${totalProfit < 0 ? "-" : ""}฿${money(Math.abs(totalProfit))}</td>
+    </tr>`;
+}
+
+/* ===== นำทางหน้าและส่งออก Excel ===== */
+const appPages = {
+    dashboard: { element: "dashboardPage", label: "ภาพรวม" },
+    cowSection: { element: "cowSection", label: "ประวัติซื้อวัว" },
+    saleSection: { element: "saleSection", label: "ประวัติส่งวัว" },
+    feedSection: { element: "feedSection", label: "อาหารวัว" },
+    reportSection: { element: "reportSection", label: "รายงานกำไรรายสัปดาห์" }
+};
+
+function showPage(pageId, updateHistory = true) {
+    const page = appPages[pageId] ? pageId : "dashboard";
+    Object.entries(appPages).forEach(([id, config]) => {
+        $(config.element).classList.toggle("hidden", id !== page);
+    });
+    document.querySelectorAll(".nav-links a").forEach(link => {
+        const active = link.hash === `#${page}`;
+        link.classList.toggle("active", active);
+        if (active) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+    });
+    if (updateHistory && location.hash !== `#${page}`) {
+        location.hash = page;
+    }
+    window.scrollTo(0, 0);
+}
+
+function xmlEscape(value) {
+    return String(value ?? "")
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function excelWorkbook(sheets) {
+    const rows = sheets.map(sheet => {
+        const header = `<Row>${sheet.headers.map(value =>
+            `<Cell ss:StyleID="Header"><Data ss:Type="String">${xmlEscape(value)}</Data></Cell>`
+        ).join("")}</Row>`;
+        const data = sheet.rows.map(row => `<Row>${row.map(value => {
+            const isNumber = typeof value === "number" && Number.isFinite(value);
+            return `<Cell><Data ss:Type="${isNumber ? "Number" : "String"}">${xmlEscape(value)}</Data></Cell>`;
+        }).join("")}</Row>`).join("");
+        return `<Worksheet ss:Name="${xmlEscape(sheet.name.slice(0, 31))}"><Table>${header}${data}</Table></Worksheet>`;
+    }).join("");
+    return `<?xml version="1.0" encoding="UTF-8"?>` +
+        `<?mso-application progid="Excel.Sheet"?>` +
+        `<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ` +
+        `xmlns:o="urn:schemas-microsoft-com:office:office" ` +
+        `xmlns:x="urn:schemas-microsoft-com:office:excel" ` +
+        `xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">` +
+        `<Styles><Style ss:ID="Header"><Font ss:Bold="1"/></Style></Styles>${rows}</Workbook>`;
+}
+
+function feedExportSheets() {
+    const stocks = getFeedStock();
+    const purchases = [...farmData.feedPurchases].sort((a,b) => b.date.localeCompare(a.date));
+    const uses = [...farmData.feedUses].sort((a,b) => b.date.localeCompare(a.date));
+    return [
+        {
+            name: "สต็อกอาหาร",
+            headers: ["ชื่ออาหาร", "ยอดซื้อ", "ยอดใช้", "คงเหลือ", "หน่วย"],
+            rows: [
+                ...stocks.map(s => [s.name, s.bought, s.used, s.remaining, s.unit]),
+                ...totalsByUnit(stocks, "bought").map(total => {
+                    const unitStocks = stocks.filter(stock => stock.unit === total.unit);
+                    return [
+                        "ยอดสุทธิ",
+                        total.quantity,
+                        unitStocks.reduce((sum, stock) => sum + stock.used, 0),
+                        unitStocks.reduce((sum, stock) => sum + stock.remaining, 0),
+                        total.unit
+                    ];
+                })
+            ]
+        },
+        {
+            name: "ประวัติซื้ออาหาร",
+            headers: ["วันที่", "ชื่ออาหาร", "จำนวน", "หน่วย", "ราคาต่อหน่วย", "ราคารวม"],
+            rows: [
+                ...purchases.map(p => [
+                    dateText(p.date), p.name, p.quantity, p.unit,
+                    Number.isFinite(p.unitPrice) ? p.unitPrice : "-", p.total
+                ]),
+                ["ยอดสุทธิ", `${purchases.length} รายการ`, quantityTotalsText(purchases), "แยกหน่วย", "-",
+                    purchases.reduce((sum, purchase) => sum + purchase.total, 0)]
+            ]
+        },
+        {
+            name: "ประวัติเบิกใช้",
+            headers: ["วันที่", "ชื่ออาหาร", "จำนวนที่ใช้", "หน่วย", "หมายเหตุ"],
+            rows: [
+                ...uses.map(u => [dateText(u.date), u.name, u.quantity, u.unit, u.note || "-"]),
+                ["ยอดสุทธิ", `${uses.length} รายการ`, quantityTotalsText(uses), "แยกหน่วย", "-"]
+            ]
+        }
+    ];
+}
+
+function exportSheetsForPage(page) {
+    if (page === "feedSection") return feedExportSheets();
+    if (page === "cowSection") {
+        const cows = [...farmData.cows].sort((a,b) => b.date.localeCompare(a.date));
+        const marketGroups = new Map();
+        cows.forEach(cow => {
+            const market = cow.market.trim() || "ไม่ระบุตลาด";
+            if (!marketGroups.has(market)) marketGroups.set(market, []);
+            marketGroups.get(market).push(cow);
+        });
+        return [{
+            name: "ประวัติซื้อวัว",
+            headers: ["รหัสวัว", "ตลาดที่ซื้อ", "วันที่ซื้อ", "ราคาซื้อ", "หมายเหตุ", "สถานะ"],
+            rows: [
+                ...[...marketGroups].flatMap(([market, marketCows]) => [
+                    ...marketCows.map(c => [
+                        c.id, market, dateText(c.date), c.price, c.note || "-",
+                        getSale(c.id) ? "ส่งขายแล้ว" : "อยู่ในฟาร์ม"
+                    ]),
+                    [`ยอดสุทธิตลาด ${market}`, `${marketCows.length} ตัว`, "-",
+                        marketCows.reduce((sum, cow) => sum + cow.price, 0), "-", "-"]
+                ]),
+                ["ยอดสุทธิ", `${cows.length} ตัว`, "-", cows.reduce((sum, cow) => sum + cow.price, 0), "-", "-"]
+            ]
+        }];
+    }
+    if (page === "saleSection") {
+        const sales = [...farmData.sales].sort((a,b) => b.date.localeCompare(a.date));
+        return [{
+            name: "ประวัติส่งวัว",
+            headers: ["รหัสวัว", "วันที่ขาย", "ราคาซื้อ", "หมายเหตุ", "ราคาขาย", "กำไร/ขาดทุน"],
+            rows: [
+                ...sales.map(s => [s.cowId, dateText(s.date), s.cost, s.note || "-", s.price, s.price - s.cost]),
+                ["ยอดสุทธิ", `${sales.length} ตัว`,
+                    sales.reduce((sum, sale) => sum + sale.cost, 0),
+                    sales.reduce((sum, sale) => sum + sale.price, 0),
+                    sales.reduce((sum, sale) => sum + sale.price - sale.cost, 0), "-"]
+            ]
+        }];
+    }
+    if (page === "reportSection") return [weeklyExportSheet()];
+    return [...exportSheetsForPage("cowSection"), ...exportSheetsForPage("saleSection"),
+        ...feedExportSheets(), weeklyExportSheet()];
+}
+
+function weeklyExportSheet() {
+    const weeks = {};
+    farmData.sales.forEach(s => {
+        const key = mondayOf(s.date);
+        if (!weeks[key]) weeks[key] = { count: 0, sales: 0, cost: 0 };
+        weeks[key].count++;
+        weeks[key].sales += s.price;
+        weeks[key].cost += s.cost;
+    });
+    return {
+        name: "รายงานกำไรรายสัปดาห์",
+        headers: ["สัปดาห์ (วันเริ่มต้น)", "จำนวนวัวที่ขาย", "ยอดขายรวม", "ต้นทุนวัว", "กำไร/ขาดทุน"],
+        rows: [
+            ...Object.keys(weeks).sort((a,b) => b.localeCompare(a)).map(key => {
+                const week = weeks[key];
+                return [`สัปดาห์เริ่ม ${dateText(key)}`, week.count, week.sales, week.cost, week.sales - week.cost];
+            }),
+            ["ยอดสุทธิ", farmData.sales.length,
+                farmData.sales.reduce((sum, sale) => sum + sale.price, 0),
+                farmData.sales.reduce((sum, sale) => sum + sale.cost, 0),
+                farmData.sales.reduce((sum, sale) => sum + sale.price - sale.cost, 0)]
+        ]
+    };
+}
+
+function exportCurrentPage() {
+    if (!currentAccount) {
+        toast("กรุณาเข้าสู่ระบบก่อนส่งออกข้อมูล");
+        return;
+    }
+    const page = appPages[location.hash.slice(1)] ? location.hash.slice(1) : "dashboard";
+    const sheets = exportSheetsForPage(page);
+    const safeFarmName = (currentAccount.farmName || "ฟาร์ม")
+        .replace(/[<>:"/\\|?*]/g, "-").trim() || "ฟาร์ม";
+    const fileName = `${safeFarmName}_${appPages[page].label}_${formatBuddhistDate(today()).replace(/\//g, "-")}.xls`;
+    const blob = new Blob(["\uFEFF", excelWorkbook(sheets)], {
+        type: "application/vnd.ms-excel;charset=utf-8"
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast("ส่งออกไฟล์ Excel เรียบร้อยแล้ว");
+}
+
+function renderDashboard() {
+    $("dashboardDate").textContent = new Intl.DateTimeFormat("th-TH", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        calendar: "buddhist"
+    }).format(new Date());
+
+    const activities = [
+        ...farmData.cows.map(cow => ({
+            date: cow.date,
+            type: "🐄　ซื้อวัว",
+            detail: `${cow.id} · ${cow.market}`,
+            amount: `-฿${money(cow.price)}`,
+            status: "สำเร็จ"
+        })),
+        ...farmData.sales.map(sale => ({
+            date: sale.date,
+            type: "🚚　ส่งวัว",
+            detail: `${sale.cowId}${sale.note ? ` · ${sale.note}` : ""}`,
+            amount: `฿${money(sale.price)}`,
+            status: "สำเร็จ"
+        })),
+        ...farmData.feedPurchases.map(purchase => ({
+            date: purchase.date,
+            type: "🌿　ซื้ออาหาร",
+            detail: `${purchase.name} ${money(purchase.quantity)} ${purchase.unit}`,
+            amount: `-฿${money(purchase.total)}`,
+            status: "สำเร็จ"
+        })),
+        ...farmData.feedUses.map(use => ({
+            date: use.date,
+            type: "📦　เบิกอาหาร",
+            detail: `${use.name} ${money(use.quantity)} ${use.unit}${use.note ? ` · ${use.note}` : ""}`,
+            amount: "-",
+            status: "บันทึกแล้ว"
+        }))
+    ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+
+    $("dashboardActivities").innerHTML = activities.length ? activities.map(activity => `
+        <tr>
+            <td>${dateText(activity.date)}</td>
+            <td class="activity-type">${escapeHTML(activity.type)}</td>
+            <td>${escapeHTML(activity.detail)}</td>
+            <td class="activity-amount">${escapeHTML(activity.amount)}</td>
+            <td><span class="status status-in">${escapeHTML(activity.status)}</span></td>
+        </tr>
+    `).join("") : `<tr><td class="activity-empty" colspan="5">ยังไม่มีรายการเคลื่อนไหว เริ่มบันทึกซื้อวัวหรืออาหารได้เลย</td></tr>`;
+
+    const currentWeek = mondayOf(today());
+    const requestedWeekCount = Number($("dashboardWeekRange")?.value || 4);
+    const weekCount = [4, 8, 12].includes(requestedWeekCount) ? requestedWeekCount : 4;
+    const weeks = Array.from({ length: weekCount }, (_, index) => {
+        const date = new Date(`${currentWeek}T12:00:00`);
+        date.setDate(date.getDate() - (weekCount - 1 - index) * 7);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        const sales = farmData.sales.filter(sale => mondayOf(sale.date) === key);
+        return {
+            key,
+            profit: sales.reduce((sum, sale) => sum + sale.price - sale.cost, 0)
+        };
+    });
+    const maxProfit = Math.max(0, ...weeks.map(week => Math.abs(week.profit)));
+    $("dashboardWeeklyChart").innerHTML = `
+        <div class="chart-axis"><span>฿${money(maxProfit)}</span><span>฿${money(maxProfit / 2)}</span><span>฿0</span></div>
+        <div class="chart-columns${weekCount > 4 ? " compact" : ""}">
+            ${weeks.map((week, index) => {
+                const height = maxProfit ? Math.max(8, Math.abs(week.profit) / maxProfit * 78) : 8;
+                const label = weekCount > 4 ? `ส${index + 1}` : `สัปดาห์ ${index + 1}`;
+                return `<div class="chart-column" title="${dateText(week.key)} · ${week.profit < 0 ? "-" : ""}฿${money(Math.abs(week.profit))}">
+                    <div class="chart-bar-area">
+                        <div class="chart-bar${week.profit < 0 ? " negative" : ""}" style="height:${height}%">
+                            <span class="chart-value">${week.profit < 0 ? "-" : ""}฿${money(Math.abs(week.profit))}</span>
+                        </div>
+                    </div>
+                    <span class="chart-week">${label}</span>
+                </div>`;
+            }).join("")}
+        </div>`;
+
+    const stocks = getFeedStock();
+    const visibleStocks = [...stocks]
+        .sort((a, b) => b.remaining - a.remaining)
+        .slice(0, 4);
+    $("dashboardFeedStock").innerHTML = visibleStocks.length ? visibleStocks.map(stock => {
+        const percent = stock.bought > 0
+            ? Math.max(0, Math.min(100, stock.remaining / stock.bought * 100))
+            : 0;
+        return `<div class="stock-summary-row">
+            <span class="stock-summary-name">🌿　${escapeHTML(stock.name)}</span>
+            <span class="stock-summary-remaining">${money(stock.remaining)} ${escapeHTML(stock.unit)}</span>
+            <span class="stock-summary-used">${money(stock.bought)} ${escapeHTML(stock.unit)}</span>
+            <span class="stock-summary-cost">฿${money(stock.totalCost)}</span>
+            <div class="stock-progress" role="progressbar" aria-label="อาหาร ${escapeHTML(stock.name)} คงเหลือ"
+                aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(percent)}">
+                <span style="width:${percent}%"></span>
+            </div>
+        </div>`;
+    }).join("") : `<div class="dashboard-empty">ยังไม่มีข้อมูลสต็อกอาหาร</div>`;
+
+    const emptyStocks = stocks.filter(stock => stock.remaining <= 0);
+    const latestSale = [...farmData.sales].sort((a, b) => b.date.localeCompare(a.date))[0];
+    const latestPurchase = [
+        ...farmData.cows.map(cow => ({
+            date: cow.date, icon: "🐄", title: `ซื้อวัว ${cow.id}`, detail: cow.market
+        })),
+        ...farmData.feedPurchases.map(purchase => ({
+            date: purchase.date, icon: "🌿", title: `ซื้ออาหาร ${purchase.name}`,
+            detail: `${money(purchase.quantity)} ${purchase.unit} · ฿${money(purchase.total)}`
+        }))
+    ].sort((a, b) => b.date.localeCompare(a.date))[0];
+    const alerts = [
+        emptyStocks.length
+            ? {
+                icon: "⚠️",
+                title: `อาหารหมดสต็อก ${emptyStocks.length} ชนิด`,
+                detail: emptyStocks.map(stock => stock.name).join(" · "),
+                time: "ตรวจสอบ"
+            }
+            : {
+                icon: "✓",
+                title: "สต็อกอาหารพร้อมใช้งาน",
+                detail: `มีอาหาร ${stocks.filter(stock => stock.remaining > 0).length} ชนิดที่ยังคงเหลือ`,
+                time: "ปัจจุบัน"
+            },
+        latestSale
+            ? {
+                icon: "🚚",
+                title: `ส่งวัว ${latestSale.cowId} ล่าสุด`,
+                detail: `ราคาขาย ฿${money(latestSale.price)}`,
+                time: dateText(latestSale.date)
+            }
+            : {
+                icon: "🚚",
+                title: "ยังไม่มีประวัติส่งวัว",
+                detail: "รายการส่งวัวที่บันทึกจะแสดงที่นี่",
+                time: "—"
+            },
+        latestPurchase
+            ? {
+                icon: latestPurchase.icon,
+                title: latestPurchase.title,
+                detail: latestPurchase.detail || "รายการซื้อวัว",
+                time: dateText(latestPurchase.date)
+            }
+            : {
+                icon: "📋",
+                title: "ยังไม่มีรายการซื้อ",
+                detail: "รายการซื้อวัวหรืออาหารจะแสดงที่นี่",
+                time: "—"
+            }
+    ];
+    $("dashboardAlerts").innerHTML = alerts.map(alert => `
+        <div class="farm-alert">
+            <span class="farm-alert-icon" aria-hidden="true">${alert.icon}</span>
+            <div><div class="farm-alert-title">${escapeHTML(alert.title)}</div><div class="farm-alert-detail">${escapeHTML(alert.detail)}</div></div>
+            <span class="farm-alert-time">${escapeHTML(alert.time)}</span>
+        </div>
+    `).join("");
+}
+
+/* ===== แสดงผลทั้งหมด ===== */
+function renderAll() {
+    renderCows();
+    renderSales();
+    renderFeedStock();
+    renderFeedHistory();
+    renderWeeklyReport();
+    renderDashboard();
+}
+
+/* วันที่เริ่มต้น */
+setDefaultDates();
+restoreSession();
+
+/* กด Esc ปิดหน้าต่างเข้าสู่ระบบ */
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeAuth();
+});
+
+window.addEventListener("hashchange", () => {
+    if (currentAccount) showPage(location.hash.slice(1), false);
+});
+</script>
+</body>
+</html>

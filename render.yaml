@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: my-cow-farm
+    runtime: node
+    plan: starter
+    buildCommand: npm ci
+    startCommand: npm start
+    disk:
+      name: farm-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FARM_DATA_DIR
+        value: /var/data
